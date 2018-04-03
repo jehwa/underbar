@@ -190,30 +190,45 @@
   //          No accumulator is given so the first element is used.
   _.reduce = function(collection, iterator, accumulator) {
 
-    let output = (accumulator || accumulator === 0) ? accumulator : collection[0];
+    // let output = (accumulator || accumulator === 0) ? accumulator : collection[0];
+    //
+    // if(accumulator || accumulator === 0) {
+    //   _.each(collection, function(element) {
+    //     output = iterator(output, element);
+    //   })
+    // } else {
+    //   // accumulator = collection[0];
+    //   for(let i = 1; i < collection.length; i ++) {
+    //     output = iterator(output, collection[i]);
+    //   }
+    // }
+    // return output;
 
-    if(accumulator || accumulator === 0) {
-      _.each(collection, function(element) {
-        output = iterator(output, element);
-      })
-    } else {
-      // accumulator = collection[0];
-      for(let i = 1; i < collection.length; i ++) {
-        output = iterator(output, collection[i]);
+    // if(accumulator || accumulator === 0) {
+    //   _.each(collection, function(element) {
+    //     accumulator = iterator(accumulator, element);
+    //   })
+    // } else {
+    //   accumulator = collection[0];
+    //   collection = collection.slice(1);
+    //   _.each(collection, function(element) {
+    //     accumulator = iterator(accumulator, element);
+    //   })
+    // }
+    // return accumulator;
+
+    let passed = false;
+    _.each(collection, function(element) {
+      if(accumulator == undefined && !passed) {
+        accumulator = element;
+        passed = true;
+      } else {
+        accumulator = iterator(accumulator, element);
       }
-    }
-    return output;
+    });
+    return accumulator;
 
-      // if(accumulator || accumulator === 0) {
-      //   _.each(collection, function(element) {
-      //     accumulator = iterator(accumulator, element);
-      //   })
-      // } eles {
-      //   for(let i = 1; i < collection.length; i ++) {
-      //     accumulator = iterator(collection[0], collection[i]);
-      //   }
-      // }
-      // return accumulator;
+
   };
 
 
@@ -234,6 +249,15 @@
   // Determine whether all of the elements match a truth test.
   _.every = function(collection, iterator) {
     // TIP: Try re-using reduce() here.
+    if(!iterator) iterator = _.identity;
+
+    return _.reduce(collection, function(wasFound, item) {
+      if(!iterator(item)) {
+        wasFound = false;
+      }
+      return wasFound;
+    }, true);
+
   };
 
   // Determine whether any of the elements pass a truth test. If no iterator is
